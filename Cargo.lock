@@ -478,6 +478,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
 
 [[package]]
+name = "chat"
+version = "0.1.0"
+dependencies = [
+ "actix-rt",
+ "actix-web",
+ "actix-ws",
+ "anyhow",
+ "futures",
+ "log",
+ "pretty_env_logger",
+ "tokio",
+]
+
+[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1791,20 +1805,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2986deb581c4fe11b621998a5e53361efe6b48a151178d0cd9eeffa4dc6acc9"
 dependencies = [
  "winapi 0.3.8",
-]
-
-[[package]]
-name = "ws-testing"
-version = "0.1.0"
-dependencies = [
- "actix-rt",
- "actix-web",
- "actix-ws",
- "anyhow",
- "futures",
- "log",
- "pretty_env_logger",
- "tokio",
 ]
 
 [[package]]
