@@ -4,7 +4,7 @@ use actix_http::{
 };
 use actix_web::Error;
 use bytes::{Bytes, BytesMut};
-use futures::stream::Stream;
+use futures::stream::{Stream, StreamExt};
 use std::{
     collections::VecDeque,
     io,
@@ -14,6 +14,7 @@ use std::{
 use tokio::sync::mpsc::Receiver;
 use tokio_util::codec::{Decoder, Encoder};
 
+/// A response body for Websocket HTTP Requests
 #[pin_project::pin_project]
 pub struct StreamingBody {
     #[pin]
@@ -25,6 +26,9 @@ pub struct StreamingBody {
     closing: bool,
 }
 
+/// A stream of Messages from a websocket client
+///
+/// Messages can be accessed via the stream's `.next()` method
 #[pin_project::pin_project]
 pub struct MessageStream {
     #[pin]
@@ -57,6 +61,17 @@ impl MessageStream {
             codec: Codec::new(),
             closing: false,
         }
+    }
+
+    /// Wait for the next item from the message stream
+    ///
+    /// ```rust,ignore
+    /// while let Some(Ok(msg)) = stream.next().await {
+    ///     // handle message
+    /// }
+    /// ```
+    pub async fn next(&'_ mut self) -> Option<Result<Message, ProtocolError>> {
+        StreamExt::next(self).await
     }
 }
 
