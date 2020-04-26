@@ -70,6 +70,7 @@ impl MessageStream {
     ///     // handle message
     /// }
     /// ```
+    #[allow(clippy::should_implement_trait)]
     pub async fn next(&'_ mut self) -> Option<Result<Message, ProtocolError>> {
         StreamExt::next(self).await
     }
