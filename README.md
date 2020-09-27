@@ -5,9 +5,8 @@ _websockets for the Actix Runtime without actors_
 ```toml
 # Cargo.toml
 anyhow = "1.0"
-actix-rt = "1.1.0"
-actix-web = "3.0.0-alpha.1"
-actix-ws = "0.1.0-alpha.0"
+actix-web = "3.0.2"
+actix-ws = "0.1.0"
 ```
 
 ```rust
@@ -37,7 +36,7 @@ async fn ws(req: HttpRequest, body: web::Payload) -> Result<HttpResponse, Error>
     Ok(response)
 }
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> Result<(), anyhow::Error> {
     HttpServer::new(move || {
         App::new()
