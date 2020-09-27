@@ -1,7 +1,7 @@
 [package]
 name = "actix-ws"
 description = "Websockets for the Actix runtime, without Actors"
-version = "0.1.0-alpha.1"
+version = "0.1.0"
 authors = ["asonix <asonix@asonix.dog>"]
 readme = "README.md"
 repository = "https://git.asonix.dog/asonix/actix-actorless-websockets"
@@ -15,13 +15,12 @@ members = [
 ]
 
 [dependencies]
-actix-http = "2.0.0-alpha.3"
-actix-rt = "1.1.1"
-actix-web = "3.0.0-alpha.2"
+actix-http = { version = "2.0.0", default-features = false }
+actix-web = { version = "3.0.2", default-features = false }
 anyhow = "1.0"
 bytes = "0.5"
 futures = "0.3"
 pin-project = "0.4.9"
 thiserror = "1.0"
 tokio = { version = "0.2", features = ["sync", "stream", "io-util"] }
-tokio-util = { version = "0.2", features = ["codec"] }
+tokio-util = { version = "0.3", features = ["codec"] }
