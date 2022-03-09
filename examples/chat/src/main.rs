@@ -72,8 +72,7 @@ async fn ws(
                 break;
             }
 
-            if Instant::now().duration_since(alive2.lock().await.clone()) > Duration::from_secs(10)
-            {
+            if Instant::now().duration_since(*alive2.lock().await) > Duration::from_secs(10) {
                 let _ = session2.close(None).await;
                 break;
             }
@@ -90,7 +89,8 @@ async fn ws(
                 }
                 Message::Text(s) => {
                     info!("Relaying text, {}", s);
-                    chat.send(s).await;
+                    let s: &str = s.as_ref();
+                    chat.send(s.into()).await;
                 }
                 Message::Close(reason) => {
                     let _ = session.close(reason).await;
@@ -195,7 +195,7 @@ async fn main() -> Result<(), anyhow::Error> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .data(chat.clone())
+            .app_data(web::Data::new(chat.clone()))
             .route("/", web::get().to(index))
             .route("/ws", web::get().to(ws))
     })

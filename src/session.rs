@@ -48,7 +48,7 @@ impl Session {
         self.pre_check();
         if let Some(inner) = self.inner.as_mut() {
             inner
-                .send(Message::Text(msg.into()))
+                .send(Message::Text(msg.into().into()))
                 .await
                 .map_err(|_| Closed)
         } else {
@@ -130,7 +130,7 @@ impl Session {
     /// ```
     pub async fn close(mut self, reason: Option<CloseReason>) -> Result<(), Closed> {
         self.pre_check();
-        if let Some(mut inner) = self.inner.take() {
+        if let Some(inner) = self.inner.take() {
             self.closed.store(true, Ordering::Relaxed);
             inner.send(Message::Close(reason)).await.map_err(|_| Closed)
         } else {

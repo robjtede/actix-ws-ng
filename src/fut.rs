@@ -4,7 +4,7 @@ use actix_http::{
 };
 use actix_web::Error;
 use bytes::{Bytes, BytesMut};
-use futures::stream::{Stream, StreamExt};
+use futures_util::stream::{Stream, StreamExt};
 use std::{
     collections::VecDeque,
     io,
@@ -87,7 +87,7 @@ impl Stream for StreamingBody {
         }
 
         loop {
-            match Pin::new(&mut this.session_rx).poll_next(cx) {
+            match Pin::new(&mut this.session_rx).poll_recv(cx) {
                 Poll::Ready(Some(msg)) => {
                     this.messages.push_back(msg);
                 }
@@ -100,7 +100,7 @@ impl Stream for StreamingBody {
         }
 
         while let Some(msg) = this.messages.pop_front() {
-            if let Err(e) = this.codec.encode(msg, &mut this.buf) {
+            if let Err(e) = this.codec.encode(msg, this.buf) {
                 return Poll::Ready(Some(Err(e.into())));
             }
         }
@@ -149,7 +149,7 @@ impl Stream for MessageStream {
         }
 
         // Create messages until there's no more bytes left
-        while let Some(frame) = this.codec.decode(&mut this.buf)? {
+        while let Some(frame) = this.codec.decode(this.buf)? {
             let message = match frame {
                 Frame::Text(bytes) => {
                     let s = std::str::from_utf8(&bytes)
@@ -157,7 +157,7 @@ impl Stream for MessageStream {
                             ProtocolError::Io(io::Error::new(io::ErrorKind::Other, e.to_string()))
                         })?
                         .to_string();
-                    Message::Text(s)
+                    Message::Text(s.into())
                 }
                 Frame::Binary(bytes) => Message::Binary(bytes),
                 Frame::Ping(bytes) => Message::Ping(bytes),

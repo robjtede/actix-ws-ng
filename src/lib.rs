@@ -4,7 +4,10 @@
 //!
 //! See documentation for the [`handle`] method for usage
 
-use actix_http::ws::handshake;
+use actix_http::{
+    body::{BodyStream, MessageBody},
+    ws::handshake,
+};
 use actix_web::{web, HttpRequest, HttpResponse};
 use tokio::sync::mpsc::channel;
 
@@ -68,7 +71,9 @@ pub fn handle(
     let (tx, rx) = channel(32);
 
     Ok((
-        response.streaming(StreamingBody::new(rx)),
+        response
+            .message_body(BodyStream::new(StreamingBody::new(rx)).boxed())?
+            .into(),
         Session::new(tx),
         MessageStream::new(body.into_inner()),
     ))
