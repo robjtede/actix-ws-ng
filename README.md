@@ -5,8 +5,8 @@ _websockets for the Actix Runtime without actors_
 ```toml
 # Cargo.toml
 anyhow = "1.0"
-actix-web = "3.0.2"
-actix-ws = "0.1.0"
+actix-web = "4.0.1"
+actix-ws = "0.2.0"
 ```
 
 ```rust
