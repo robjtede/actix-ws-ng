@@ -1,5 +1,5 @@
 use actix_http::ws::{CloseReason, Message};
-use bytes::Bytes;
+use actix_web::web::Bytes;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
@@ -16,9 +16,16 @@ pub struct Session {
 }
 
 /// The error representing a closed websocket session
-#[derive(Debug, thiserror::Error)]
-#[error("Session is closed")]
+#[derive(Debug)]
 pub struct Closed;
+
+impl std::fmt::Display for Closed {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Session is closed")
+    }
+}
+
+impl std::error::Error for Closed {}
 
 impl Session {
     pub(super) fn new(inner: Sender<Message>) -> Self {

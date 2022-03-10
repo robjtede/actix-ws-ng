@@ -1,18 +1,21 @@
+use actix_codec::{Decoder, Encoder};
 use actix_http::{
     ws::{Codec, Frame, Message, ProtocolError},
     Payload,
 };
-use actix_web::Error;
-use bytes::{Bytes, BytesMut};
-use futures_util::stream::{Stream, StreamExt};
+use actix_web::{
+    web::{Bytes, BytesMut},
+    Error,
+};
+use futures_core::stream::Stream;
 use std::{
     collections::VecDeque,
+    future::Future,
     io,
     pin::Pin,
     task::{Context, Poll},
 };
 use tokio::sync::mpsc::Receiver;
-use tokio_util::codec::{Decoder, Encoder};
 
 pin_project_lite::pin_project! {
     /// A response body for Websocket HTTP Requests
@@ -72,9 +75,30 @@ impl MessageStream {
     ///     // handle message
     /// }
     /// ```
-    #[allow(clippy::should_implement_trait)]
-    pub async fn next(&'_ mut self) -> Option<Result<Message, ProtocolError>> {
-        StreamExt::next(self).await
+    pub async fn recv(&mut self) -> Option<Result<Message, ProtocolError>> {
+        poll_fn(|cx| Pin::new(&mut *self).poll_next(cx)).await
+    }
+}
+
+struct PollFn<F>(F);
+
+impl<F> Unpin for PollFn<F> {}
+
+fn poll_fn<F, T>(f: F) -> PollFn<F>
+where
+    F: FnMut(&mut Context<'_>) -> Poll<T>,
+{
+    PollFn(f)
+}
+
+impl<F, T> Future for PollFn<F>
+where
+    F: FnMut(&mut Context<'_>) -> Poll<T>,
+{
+    type Output = T;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        (&mut self.0)(cx)
     }
 }
 
