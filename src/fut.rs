@@ -17,32 +17,26 @@ use std::{
 };
 use tokio::sync::mpsc::Receiver;
 
-pin_project_lite::pin_project! {
-    /// A response body for Websocket HTTP Requests
-    pub struct StreamingBody {
-        #[pin]
-        session_rx: Receiver<Message>,
+/// A response body for Websocket HTTP Requests
+pub struct StreamingBody {
+    session_rx: Receiver<Message>,
 
-        messages: VecDeque<Message>,
-        buf: BytesMut,
-        codec: Codec,
-        closing: bool,
-    }
+    messages: VecDeque<Message>,
+    buf: BytesMut,
+    codec: Codec,
+    closing: bool,
 }
 
-pin_project_lite::pin_project! {
-    /// A stream of Messages from a websocket client
-    ///
-    /// Messages can be accessed via the stream's `.next()` method
-    pub struct MessageStream {
-        #[pin]
-        payload: Payload,
+/// A stream of Messages from a websocket client
+///
+/// Messages can be accessed via the stream's `.next()` method
+pub struct MessageStream {
+    payload: Payload,
 
-        messages: VecDeque<Message>,
-        buf: BytesMut,
-        codec: Codec,
-        closing: bool,
-    }
+    messages: VecDeque<Message>,
+    buf: BytesMut,
+    codec: Codec,
+    closing: bool,
 }
 
 impl StreamingBody {
@@ -71,7 +65,7 @@ impl MessageStream {
     /// Wait for the next item from the message stream
     ///
     /// ```rust,ignore
-    /// while let Some(Ok(msg)) = stream.next().await {
+    /// while let Some(Ok(msg)) = stream.recv().await {
     ///     // handle message
     /// }
     /// ```
@@ -106,9 +100,9 @@ impl Stream for StreamingBody {
     type Item = Result<Bytes, Error>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut this = self.project();
+        let mut this = self.get_mut();
 
-        if *this.closing {
+        if this.closing {
             return Poll::Ready(None);
         }
 
@@ -118,7 +112,7 @@ impl Stream for StreamingBody {
                     this.messages.push_back(msg);
                 }
                 Poll::Ready(None) => {
-                    *this.closing = true;
+                    this.closing = true;
                     break;
                 }
                 Poll::Pending => break,
@@ -126,7 +120,7 @@ impl Stream for StreamingBody {
         }
 
         while let Some(msg) = this.messages.pop_front() {
-            if let Err(e) = this.codec.encode(msg, this.buf) {
+            if let Err(e) = this.codec.encode(msg, &mut this.buf) {
                 return Poll::Ready(Some(Err(e.into())));
             }
         }
@@ -143,7 +137,7 @@ impl Stream for MessageStream {
     type Item = Result<Message, ProtocolError>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut this = self.project();
+        let mut this = self.get_mut();
 
         // Return the first message in the queue if one exists
         //
@@ -152,7 +146,7 @@ impl Stream for MessageStream {
             return Poll::Ready(Some(Ok(msg)));
         }
 
-        if !*this.closing {
+        if !this.closing {
             // Read in bytes until there's nothing left to read
             loop {
                 match Pin::new(&mut this.payload).poll_next(cx) {
@@ -166,7 +160,7 @@ impl Stream for MessageStream {
                         )))));
                     }
                     Poll::Ready(None) => {
-                        *this.closing = true;
+                        this.closing = true;
                         break;
                     }
                     Poll::Pending => break,
@@ -175,7 +169,7 @@ impl Stream for MessageStream {
         }
 
         // Create messages until there's no more bytes left
-        while let Some(frame) = this.codec.decode(this.buf)? {
+        while let Some(frame) = this.codec.decode(&mut this.buf)? {
             let message = match frame {
                 Frame::Text(bytes) => {
                     let s = std::str::from_utf8(&bytes)
@@ -201,7 +195,7 @@ impl Stream for MessageStream {
         }
 
         // If we've exhausted our message queue and we're closing, close the stream
-        if *this.closing {
+        if this.closing {
             return Poll::Ready(None);
         }
 
