@@ -14,30 +14,32 @@ use std::{
 use tokio::sync::mpsc::Receiver;
 use tokio_util::codec::{Decoder, Encoder};
 
-/// A response body for Websocket HTTP Requests
-#[pin_project::pin_project]
-pub struct StreamingBody {
-    #[pin]
-    session_rx: Receiver<Message>,
+pin_project_lite::pin_project! {
+    /// A response body for Websocket HTTP Requests
+    pub struct StreamingBody {
+        #[pin]
+        session_rx: Receiver<Message>,
 
-    messages: VecDeque<Message>,
-    buf: BytesMut,
-    codec: Codec,
-    closing: bool,
+        messages: VecDeque<Message>,
+        buf: BytesMut,
+        codec: Codec,
+        closing: bool,
+    }
 }
 
-/// A stream of Messages from a websocket client
-///
-/// Messages can be accessed via the stream's `.next()` method
-#[pin_project::pin_project]
-pub struct MessageStream {
-    #[pin]
-    payload: Payload,
+pin_project_lite::pin_project! {
+    /// A stream of Messages from a websocket client
+    ///
+    /// Messages can be accessed via the stream's `.next()` method
+    pub struct MessageStream {
+        #[pin]
+        payload: Payload,
 
-    messages: VecDeque<Message>,
-    buf: BytesMut,
-    codec: Codec,
-    closing: bool,
+        messages: VecDeque<Message>,
+        buf: BytesMut,
+        codec: Codec,
+        closing: bool,
+    }
 }
 
 impl StreamingBody {
