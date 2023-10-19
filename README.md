@@ -1,14 +1,14 @@
 # Actix WS (Next Gen)
 
-_websockets for the Actix Runtime without actors_
+> WebSockets for Actix Web, without actors.
 
 ## Usage
 
 ```toml
 # Cargo.toml
-anyhow = "1.0"
-actix-web = "4.0.1"
-actix-ws-ng = "0.2.0"
+anyhow = "1"
+actix-web = "4"
+actix-ws-ng = "0.3"
 ```
 
 ```rust
