@@ -1,3 +1,11 @@
+use std::{
+    collections::VecDeque,
+    future::Future,
+    io,
+    pin::Pin,
+    task::{Context, Poll},
+};
+
 use actix_codec::{Decoder, Encoder};
 use actix_http::{
     ws::{Codec, Frame, Message, ProtocolError},
@@ -8,13 +16,6 @@ use actix_web::{
     Error,
 };
 use futures_core::stream::Stream;
-use std::{
-    collections::VecDeque,
-    future::Future,
-    io,
-    pin::Pin,
-    task::{Context, Poll},
-};
 use tokio::sync::mpsc::Receiver;
 
 /// A response body for Websocket HTTP Requests

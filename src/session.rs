@@ -1,9 +1,10 @@
-use actix_http::ws::{CloseReason, Message};
-use actix_web::web::Bytes;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
+
+use actix_http::ws::{CloseReason, Message};
+use actix_web::web::Bytes;
 use tokio::sync::mpsc::Sender;
 
 /// A handle into the websocket session.

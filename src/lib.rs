@@ -4,14 +4,13 @@
 //!
 //! See documentation for the [`handle`] method for usage.
 
+pub use actix_http::ws::{CloseCode, CloseReason, Message, ProtocolError};
 use actix_http::{
     body::{BodyStream, MessageBody},
     ws::handshake,
 };
 use actix_web::{web, HttpRequest, HttpResponse};
 use tokio::sync::mpsc::channel;
-
-pub use actix_http::ws::{CloseCode, CloseReason, Message, ProtocolError};
 
 mod fut;
 mod session;
