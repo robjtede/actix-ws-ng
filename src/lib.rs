@@ -1,8 +1,8 @@
 #![deny(missing_docs)]
 
-//! Websockets without Actors for actix runtimes
+//! WebSockets for Actix Web, without actors.
 //!
-//! See documentation for the [`handle`] method for usage
+//! See documentation for the [`handle`] method for usage.
 
 use actix_http::{
     body::{BodyStream, MessageBody},

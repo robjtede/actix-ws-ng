@@ -1,14 +1,16 @@
 [package]
-name = "actix-ws"
-description = "Websockets for the Actix runtime, without Actors"
+name = "actix-ws-ng"
+description = "WebSockets for Actix Web, without actors"
 version = "0.2.5"
-authors = ["asonix <asonix@asonix.dog>"]
+authors = [
+    "asonix <asonix@asonix.dog>",
+    "Rob Ede <robjtede@icloud.com>"
+]
 readme = "README.md"
-repository = "https://git.asonix.dog/asonix/actix-actorless-websockets"
+repository = "https://github.com/robjtede/actix-ws-ng"
 license = "MIT/Apache-2.0"
-edition = "2018"
+edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace]
 members = ["examples/chat"]
 

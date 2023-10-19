@@ -1,7 +1,9 @@
-# Actix WS
+# Actix WS (Next Gen)
+
 _websockets for the Actix Runtime without actors_
 
 ## Usage
+
 ```toml
 # Cargo.toml
 anyhow = "1.0"
@@ -52,6 +54,7 @@ async fn main() -> Result<(), anyhow::Error> {
 ```
 
 ## License
+
 This project is licensed under either of
 
 - Apache License, Version 2.0, (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
