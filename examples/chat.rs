@@ -4,7 +4,7 @@ use std::{
 };
 
 use actix_web::{middleware::Logger, web, App, HttpRequest, HttpResponse, HttpServer};
-use actix_ws::{Message, Session};
+use actix_ws_ng::{Message, Session};
 use futures::stream::{FuturesUnordered, StreamExt};
 use log::info;
 use tokio::sync::Mutex;
@@ -56,7 +56,7 @@ async fn ws(
     body: web::Payload,
     chat: web::Data<Chat>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let (response, mut session, mut stream) = actix_ws::handle(&req, body)?;
+    let (response, mut session, mut stream) = actix_ws_ng::handle(&req, body)?;
 
     chat.insert(session.clone()).await;
     info!("Inserted session");

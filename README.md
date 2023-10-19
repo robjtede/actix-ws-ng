@@ -8,7 +8,7 @@ _websockets for the Actix Runtime without actors_
 # Cargo.toml
 anyhow = "1.0"
 actix-web = "4.0.1"
-actix-ws = "0.2.0"
+actix-ws-ng = "0.2.0"
 ```
 
 ```rust

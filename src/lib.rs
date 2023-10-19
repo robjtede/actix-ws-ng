@@ -1,4 +1,6 @@
-#![deny(missing_docs)]
+#![deny(rust_2018_idioms, nonstandard_style, future_incompatible)]
+#![warn(missing_docs)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 //! WebSockets for Actix Web, without actors.
 //!

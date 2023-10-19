@@ -5,6 +5,7 @@ use std::sync::{
 
 use actix_http::ws::{CloseReason, Message};
 use actix_web::web::Bytes;
+use bytestring::ByteString;
 use tokio::sync::mpsc::Sender;
 
 /// A handle into the websocket session.
@@ -49,14 +50,11 @@ impl Session {
     ///     // session closed
     /// }
     /// ```
-    pub async fn text<T>(&mut self, msg: T) -> Result<(), Closed>
-    where
-        T: Into<String>,
-    {
+    pub async fn text(&mut self, msg: impl Into<ByteString>) -> Result<(), Closed> {
         self.pre_check();
         if let Some(inner) = self.inner.as_mut() {
             inner
-                .send(Message::Text(msg.into().into()))
+                .send(Message::Text(msg.into()))
                 .await
                 .map_err(|_| Closed)
         } else {
@@ -71,10 +69,7 @@ impl Session {
     ///     // session closed
     /// }
     /// ```
-    pub async fn binary<T>(&mut self, msg: T) -> Result<(), Closed>
-    where
-        T: Into<Bytes>,
-    {
+    pub async fn binary(&mut self, msg: impl Into<Bytes>) -> Result<(), Closed> {
         self.pre_check();
         if let Some(inner) = self.inner.as_mut() {
             inner

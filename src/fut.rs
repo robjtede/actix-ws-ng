@@ -1,6 +1,6 @@
 use std::{
     collections::VecDeque,
-    future::Future,
+    future::poll_fn,
     io,
     pin::Pin,
     task::{Context, Poll},
@@ -75,33 +75,11 @@ impl MessageStream {
     }
 }
 
-struct PollFn<F>(F);
-
-impl<F> Unpin for PollFn<F> {}
-
-fn poll_fn<F, T>(f: F) -> PollFn<F>
-where
-    F: FnMut(&mut Context<'_>) -> Poll<T>,
-{
-    PollFn(f)
-}
-
-impl<F, T> Future for PollFn<F>
-where
-    F: FnMut(&mut Context<'_>) -> Poll<T>,
-{
-    type Output = T;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        (&mut self.0)(cx)
-    }
-}
-
 impl Stream for StreamingBody {
     type Item = Result<Bytes, Error>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut this = self.get_mut();
+        let this = self.get_mut();
 
         if this.closing {
             return Poll::Ready(None);
@@ -138,7 +116,7 @@ impl Stream for MessageStream {
     type Item = Result<Message, ProtocolError>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut this = self.get_mut();
+        let this = self.get_mut();
 
         // Return the first message in the queue if one exists
         //

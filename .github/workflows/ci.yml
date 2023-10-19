@@ -34,4 +34,4 @@ jobs:
           toolchain: ${{ matrix.toolchain.version }}
 
       - name: Test
-        run: cargo test
+        run: cargo test --workspace
