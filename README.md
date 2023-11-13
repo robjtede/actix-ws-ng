@@ -1,3 +1,5 @@
+# Moved to <https://github.com/actix/actix-extras/tree/master/actix-ws>
+
 # Actix WS (Next Gen)
 
 > WebSockets for Actix Web, without actors.
